@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { CreateOutlined, Instagram, LinkedIn, Add } from "@mui/icons-material";
 import DataRow from "./DataRow";
-import { SocialNetwork, SocialNetworkInfo, SocialRoute } from "./Types";
+import { Social, SocialNetwork, SocialNetworkInfo, SocialRoute } from "./Types";
 import * as socialService from "./DataService";
 
 const socialNetworks = [
@@ -62,14 +62,22 @@ function EditUser() {
   const [editing, setEditing] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [socialRoutes, setSocialRoutes] = useState<SocialRoute[]>([]);
+  // const [socials, setSocials] = useState<Social[]>([]);
   const [nameObject, setNameObject] = useState<SocialNetworkInfo>({
     renderedValue: "",
   });
   const [link, setLink] = useState("");
   const [id, setId] = useState("");
 
+  // const refreshSocials = async () => {
+  //   const data = await socialService.get();
+  //   if (data) {
+  //     setSocials(data);
+  //   }
+  // };
+
   useEffect(() => {
-    socialService.get();
+    //refreshSocials();
   });
 
   const handleAdd = () => {

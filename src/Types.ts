@@ -19,3 +19,9 @@ export interface SocialRoute {
   link: string;
   id: string;
 }
+
+export interface Social {
+  id?: string;
+  social_id: string;
+  social_link: string;
+}
