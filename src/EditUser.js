@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Breadcrumbs,
   Link,
@@ -12,7 +12,13 @@ import {
   TextField,
   Collapse,
 } from "@mui/material";
-import { CreateOutlined, Instagram, LinkedIn } from "@mui/icons-material";
+import {
+  CreateOutlined,
+  Instagram,
+  LinkedIn,
+  Add,
+  SettingsInputAntenna,
+} from "@mui/icons-material";
 import PropTypes from "prop-types";
 import DataRow from "./DataRow";
 
@@ -119,6 +125,9 @@ function EditUser({ classes }) {
     // remove everything
     resetForm();
 
+    // reset editing mode
+    setEditing(false);
+
     // close collapse
     setCollapsed(false);
   };
@@ -126,6 +135,17 @@ function EditUser({ classes }) {
   const handleDelete = (routeId) => {
     const newSocialRoutes = socialRoutes.filter((o) => o.id !== routeId);
     setSocialRoutes(newSocialRoutes);
+  };
+
+  const handleEdit = (routeId) => {
+    const onEditingRoute = socialRoutes.filter((o) => o.id === routeId)[0];
+
+    // set form
+    setNameObject(onEditingRoute.socialInfo);
+    setLink(onEditingRoute.link);
+    setId(onEditingRoute.id);
+
+    setEditing(true);
   };
 
   return (
@@ -166,7 +186,11 @@ function EditUser({ classes }) {
             alignItems: "center",
           }}
         >
-          <CreateOutlined sx={{ fontSize: "0.8rem" }} />
+          {editing ? (
+            <CreateOutlined sx={{ fontSize: "0.8rem" }} />
+          ) : (
+            <Add sx={{ fontSize: "0.8rem" }} />
+          )}
           <span>
             {editing ? (
               <Button color="secondary" variant="text">
@@ -192,7 +216,9 @@ function EditUser({ classes }) {
             }}
           >
             <div style={{ fontSize: "0.9rem", margin: "0 0 10px 0" }}>
-              ویرایش مسیر ارتباطی توییتر
+              {editing
+                ? `ویرایش مسیر ارتباطی ${nameObject.name}`
+                : "افزودن مسیر ارتباطی"}
             </div>
             <form autoComplete="off">
               <Grid container spacing={0}>
@@ -286,7 +312,11 @@ function EditUser({ classes }) {
         >
           {socialRoutes.length > 0 ? (
             socialRoutes.map((route) => (
-              <DataRow handleDelete={handleDelete} routeInfo={route} />
+              <DataRow
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+                routeInfo={route}
+              />
             ))
           ) : (
             <span style={{ fontSize: "0.8rem" }}>

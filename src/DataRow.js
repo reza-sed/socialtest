@@ -9,7 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 import React, { useState } from "react";
 
-export default function DataRow({ routeInfo, handleDelete }) {
+export default function DataRow({ routeInfo, handleDelete, handleEdit }) {
   const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
   const [confirmation, setConfirmation] = useState("");
 
@@ -19,10 +19,8 @@ export default function DataRow({ routeInfo, handleDelete }) {
     setDeleteDialogOpened(false);
 
     if (isDelete) {
-      if (confirmation == "تایید") {
+      if (confirmation === "تایید") {
         handleDelete(id);
-      } else {
-        alert("لطفا برای اعمال حذف کلمه تایید را وارد کنید");
       }
     }
   };
@@ -59,7 +57,12 @@ export default function DataRow({ routeInfo, handleDelete }) {
         </span>
       </div>
       <div>
-        <Button variant="text" color="secondary" size="small">
+        <Button
+          variant="text"
+          color="secondary"
+          size="small"
+          onClick={() => handleEdit(id)}
+        >
           <Create />
           ویرایش
         </Button>
@@ -111,8 +114,9 @@ export default function DataRow({ routeInfo, handleDelete }) {
             color="error"
             onClick={() => handleClose(true)}
             autoFocus
+            disabled={confirmation !== "تایید"}
           >
-            تایید
+            حذف
           </Button>
         </DialogActions>
       </Dialog>
