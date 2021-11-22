@@ -7,3 +7,28 @@ body {
   color: white;
   overflow: hidden;
 }
+
+.info > span {
+  margin: 0 9px;
+}
+
+a.App-link a.App-link:hover {
+  color: white;
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+.form-container {
+  background-color: white;
+  width: 100%;
+}
+
+.formik-form {
+  display: flex;
+}
+
+.formik-form__buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}

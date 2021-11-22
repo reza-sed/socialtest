@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Breadcrumbs,
   Link,
@@ -12,20 +12,15 @@ import {
   TextField,
   Collapse,
 } from "@mui/material";
-import {
-  CreateOutlined,
-  Instagram,
-  LinkedIn,
-  Add,
-  SettingsInputAntenna,
-} from "@mui/icons-material";
-import PropTypes from "prop-types";
+import { CreateOutlined, Instagram, LinkedIn, Add } from "@mui/icons-material";
 import DataRow from "./DataRow";
+import { SocialNetwork, SocialNetworkInfo, SocialRoute } from "./Types";
+import * as socialService from "./DataService";
 
 const socialNetworks = [
   {
     name: "اینستاگرام",
-    value: "instagram",
+    value: SocialNetwork.Instagram,
     icon: <Instagram />,
     renderedValue: (
       <div
@@ -33,6 +28,8 @@ const socialNetworks = [
           display: "flex",
           alignItems: "center",
           flexWrap: "wrap",
+          fontSize: "0.8rem",
+          color: "white",
         }}
       >
         {<Instagram />}&nbsp;
@@ -42,7 +39,7 @@ const socialNetworks = [
   },
   {
     name: "لینکدین",
-    value: "linkedin",
+    value: SocialNetwork.LinkedIn,
     icon: <LinkedIn />,
     renderedValue: (
       <div
@@ -50,6 +47,8 @@ const socialNetworks = [
           display: "flex",
           alignItems: "center",
           flexWrap: "wrap",
+          fontSize: "0.8rem",
+          color: "white",
         }}
       >
         {<LinkedIn />}&nbsp;
@@ -59,39 +58,19 @@ const socialNetworks = [
   },
 ];
 
-function Item(props) {
-  const { sx, ...other } = props;
-  return (
-    <Box
-      sx={{
-        color: "white",
-        m: 1,
-        borderRadius: 1,
-        textAlign: "center",
-        fontSize: "1rem",
-        fontWeight: "700",
-        ...sx,
-      }}
-      {...other}
-    />
-  );
-}
-
-Item.propTypes = {
-  sx: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object])),
-    PropTypes.func,
-    PropTypes.object,
-  ]),
-};
-
-function EditUser({ classes }) {
+function EditUser() {
   const [editing, setEditing] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [socialRoutes, setSocialRoutes] = useState([]);
-  const [nameObject, setNameObject] = useState({ renderedValue: "" });
+  const [socialRoutes, setSocialRoutes] = useState<SocialRoute[]>([]);
+  const [nameObject, setNameObject] = useState<SocialNetworkInfo>({
+    renderedValue: "",
+  });
   const [link, setLink] = useState("");
   const [id, setId] = useState("");
+
+  useEffect(() => {
+    socialService.get();
+  });
 
   const handleAdd = () => {
     // create new route info
@@ -103,8 +82,8 @@ function EditUser({ classes }) {
 
     // duplicate check
     if (
-      socialRoutes.some((o) => o.link == link) ||
-      socialRoutes.some((o) => o.id == id)
+      socialRoutes.some((o) => o.link === link) ||
+      socialRoutes.some((o) => o.id === id)
     ) {
       alert("مقادیر تکراری می باشند");
     } else {
@@ -132,12 +111,12 @@ function EditUser({ classes }) {
     setCollapsed(false);
   };
 
-  const handleDelete = (routeId) => {
+  const handleDelete = (routeId: string) => {
     const newSocialRoutes = socialRoutes.filter((o) => o.id !== routeId);
     setSocialRoutes(newSocialRoutes);
   };
 
-  const handleEdit = (routeId) => {
+  const handleEdit = (routeId: string) => {
     const onEditingRoute = socialRoutes.filter((o) => o.id === routeId)[0];
 
     // set form
@@ -221,66 +200,78 @@ function EditUser({ classes }) {
                 : "افزودن مسیر ارتباطی"}
             </div>
             <form autoComplete="off">
-              <Grid container spacing={0}>
+              <Grid container spacing={1}>
                 <Grid item xs>
-                  <Item>
-                    <FormControl fullWidth size="small">
-                      <InputLabel id="type-label" color="secondary">
-                        نوع
-                      </InputLabel>
-                      <Select
-                        labelId="type-label"
-                        id="typeid"
-                        label="sType"
-                        value={nameObject.renderedValue}
-                        displayEmpty
-                        onChange={(v) => {
-                          const slcVal = socialNetworks.filter(
-                            (o) => o.value == v.target.value
-                          )[0];
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="type-label" color="secondary">
+                      نوع
+                    </InputLabel>
+                    <Select
+                      labelId="type-label"
+                      id="typeid"
+                      label="sType"
+                      value={nameObject.renderedValue}
+                      displayEmpty
+                      onChange={(v) => {
+                        const slcVal = socialNetworks.filter(
+                          (o) =>
+                            o.value ===
+                            (v.target.value as unknown as SocialNetwork)
+                        )[0];
 
-                          setNameObject(slcVal);
-                        }}
-                        color="secondary"
-                        renderValue={(value) => {
-                          return nameObject.renderedValue;
-                        }}
-                      >
-                        {socialNetworks.map((n) => (
-                          <MenuItem value={n.value}>{n.name}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Item>
+                        setNameObject(slcVal as SocialNetworkInfo);
+                      }}
+                      color="secondary"
+                      renderValue={(value) => {
+                        return nameObject.renderedValue;
+                      }}
+                    >
+                      {socialNetworks.map((n) => (
+                        <MenuItem sx={{ fontSize: "0.8rem" }} value={n.value}>
+                          {n.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
                 <Grid item xs>
-                  <Item>
-                    <TextField
-                      sx={{ width: "100%" }}
-                      id="link"
-                      label="لینک"
-                      size="small"
-                      color="secondary"
-                      value={link}
-                      onChange={(v) => setLink(v.target.value)}
-                    />
-                  </Item>
+                  <TextField
+                    sx={{ width: "100%" }}
+                    id="link"
+                    label="لینک"
+                    size="small"
+                    color="secondary"
+                    value={link}
+                    onChange={(v) => setLink(v.target.value)}
+                    inputProps={{
+                      style: {
+                        color: "white",
+                      },
+                    }}
+                  />
                 </Grid>
                 <Grid item xs>
-                  <Item>
-                    <TextField
-                      sx={{ width: "100%" }}
-                      id="social-id"
-                      label="ای دی (ID)"
-                      size="small"
-                      color="secondary"
-                      value={id}
-                      onChange={(v) => setId(v.target.value)}
-                    />
-                  </Item>
+                  <TextField
+                    sx={{ width: "100%" }}
+                    id="social-id"
+                    label="ای دی (ID)"
+                    size="small"
+                    color="secondary"
+                    value={id}
+                    onChange={(v) => setId(v.target.value)}
+                    inputProps={{
+                      style: { color: "white" },
+                    }}
+                  />
                 </Grid>
               </Grid>
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  margin: "5px 0",
+                }}
+              >
                 <Button
                   sx={{ margin: "0 2px" }}
                   color="secondary"

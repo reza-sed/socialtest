@@ -6,16 +6,26 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
+import { SocialNetworkInfo, SocialRoute } from "./Types";
 import React, { useState } from "react";
 
-export default function DataRow({ routeInfo, handleDelete, handleEdit }) {
+type DataRowProps = {
+  routeInfo: SocialRoute;
+  handleDelete: (id: string) => void;
+  handleEdit: (id: string) => void;
+};
+
+export default function DataRow({
+  routeInfo,
+  handleDelete,
+  handleEdit,
+}: DataRowProps) {
   const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
   const [confirmation, setConfirmation] = useState("");
 
   const { socialInfo, link, id } = routeInfo;
 
-  const handleClose = (isDelete) => {
+  const handleClose = (isDelete: boolean) => {
     setDeleteDialogOpened(false);
 
     if (isDelete) {
@@ -35,7 +45,7 @@ export default function DataRow({ routeInfo, handleDelete, handleEdit }) {
       }}
     >
       <div
-        className={classes.info}
+        className="info"
         style={{
           display: "flex",
           alignItems: "center",
@@ -106,7 +116,11 @@ export default function DataRow({ routeInfo, handleDelete, handleEdit }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button variant="text" color="secondary" onClick={handleClose}>
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={() => handleClose(false)}
+          >
             انصراف
           </Button>
           <Button
